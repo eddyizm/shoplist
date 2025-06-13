@@ -1,0 +1,40 @@
+.item-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.15s ease;
+  border: 1px solid var(--pico-card-border-color, #e0e0e0);
+  background: var(--pico-card-background-color, #fff);
+}
+
+@media (hover: hover) {
+  .item-card:hover {
+    background: var(--pico-card-active-color, rgb(63, 46, 30));
+    border-color: var(--pico-card-hover-border-color, #d0d0d0);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+}
+
+/* Mobile touch feedback */
+.item-card:active {
+  background: var(--pico-card-active-color, rgb(63, 46, 30)) !important;
+}
+
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.item-meta {
+  font-size: 0.875rem;
+  color: var(--muted-color);
+  margin-top: 0.25rem;
+}
+
+.centerFooter {
+    text-align: center;
+}

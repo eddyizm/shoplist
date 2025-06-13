@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <script src="/js/pocketbase.umd.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="css/pico.pumpkin.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="/js/app.js"></script>
+    <title>Shopping List</title>
+</head>
+
+<body>
+    <main x-data="pbData" class="container">
+        <h2>Tubby and Puff's Shopping list 🛒 🍕</h2>
+
+        <nav>
+            <ul x-show="!showLogin">
+                <!-- <li><button class="outline">Add Item</button></li> -->
+                <li><button @click="logout()" class="outline contrast">Logout</button></li>
+            </ul>
+        </nav>
+
+        <!-- login form -->
+        <article class="pico" x-show="showLogin" x-transition>
+            <hgroup>
+                <h2>Login</h2>
+                <h3>Please sign in to continue</h3>
+            </hgroup>
+            <form x-on:submit.prevent="login">
+                Email
+                <label for="email">
+                    <input x-model="email" type="email" id="email" name="email" placeholder="Email address" required />
+                </label>
+
+                <label for="password">
+                    Password
+                    <input x-model="password" type="password" id="password" name="password" placeholder="Your password"
+                        required />
+                </label>
+
+                <button @click="login()" type="submit">Login</button>
+                <mark x-show="loginMessage" x-text="loginMessage"></mark>
+                <footer>
+                    <p>Don't have an account? <a href="#">Sign up</a></p>
+                </footer>
+            </form>
+
+        </article>
+
+        <!-- show shopping list -->
+        <article x-show="!showLogin" x-transition style="margin-top: 10%;">
+            <hgroup style="display: flex; align-items: center; gap: 1rem; width: 100%;">
+
+                <h3 x-text="`Items (${itemCount})`" style="display: flex; margin: 0;"
+                    :style="isInputFocused ? 'display: none;' : ''"></h3>
+
+                <form @submit.prevent="addItem" @focusin="isInputFocused = true" @focusout="isInputFocused = false"
+                    style="display: flex; flex-grow: 1;">
+
+                    <fieldset style="display: flex; flex-grow: 1; gap: 0.5rem; margin: 0; padding: 0; border: none;">
+                        <input type="text" id="newItem" x-model="newItem" placeholder="Enter item" required
+                            x-ref="itemInput" tabindex="0" :style="isInputFocused ? 'flex-grow: 1;' : 'flex-grow: 1;'">
+
+                        <button type="submit" style="max-width: 150px;" tabindex="0">Add Item</button>
+                    </fieldset>
+                </form>
+            </hgroup>
+
+            <hr>
+            </hr>
+
+            <div class="item-list">
+
+                <!-- Add Item Form -->
+                <template x-for="(item, index) in items" :key="item.id">
+                    <article class="item-card">
+                        <div>
+                            <h5 x-text="item.item" style="margin-bottom: 0"></h5>
+                            <small class="item-meta">
+                                <span x-text="item.createdBy"></span> | <span
+                                    x-text="new Date(item.created).toLocaleDateString('en-US')"></span>
+                            </small>
+                        </div>
+                        <div class="item-actions">
+                            <!-- <button @click="editItem(item.id)" class="outline">Edit</button> -->
+                            <button @click="removeItem(item.id)" class="outline secondary">Remove</button>
+                        </div>
+                    </article>
+                </template>
+            </div>
+
+            <hr>
+            </hr>
+
+        </article>
+
+
+    </main>
+    <footer class="container centerFooter">v0.1.0</footer>
+</body>
+
+</html>
