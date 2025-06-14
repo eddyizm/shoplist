@@ -3,6 +3,7 @@ routerAdd("GET", "/api/_/config", (e) => {
     return e.json(200, {
         siteTitle: $os.getenv("SITE_TITLE"),
         appUrl: $os.getenv("APP_URL"),
+        version: $os.getenv("VERSION"),
     })
 })
 

@@ -13,8 +13,8 @@
     <title>Shopping List</title>
 </head>
 
-<body>
-    <main x-data="pbData" class="container">
+<body x-data="pbData">
+    <main class="container">
         <div x-show="isLoading">
             <h2 class="centerFooter"><span aria-busy="true">Loading...</span></h2>
         </div>
@@ -110,7 +110,7 @@
         </div>
 
     </main>
-    <footer class="container centerFooter">v0.1.0</footer>
+    <footer class="container centerFooter" x-text="`v${config.version}`"></footer>
 </body>
 
 </html>
