@@ -15,89 +15,99 @@
 
 <body>
     <main x-data="pbData" class="container">
-        <h2>Tubby and Puff's Shopping list 🛒 🍕</h2>
+        <div x-show="isLoading">
+            <h2 class="centerFooter"><span aria-busy="true">Loading...</span></h2>
+        </div>
 
-        <nav>
-            <ul x-show="!showLogin">
-                <!-- <li><button class="outline">Add Item</button></li> -->
-                <li><button @click="logout()" class="outline contrast">Logout</button></li>
-            </ul>
-        </nav>
+        <div x-show="!isLoading">
+            <h2 x-text="config.siteTitle"></h2>
 
-        <!-- login form -->
-        <article class="pico" x-show="showLogin" x-transition>
-            <hgroup>
-                <h2>Login</h2>
-                <h3>Please sign in to continue</h3>
-            </hgroup>
-            <form x-on:submit.prevent="login">
-                Email
-                <label for="email">
-                    <input x-model="email" type="email" id="email" name="email" placeholder="Email address" required />
-                </label>
+            <nav>
+                <ul x-show="!showLogin">
+                    <!-- <li><button class="outline">Add Item</button></li> -->
+                    <li><button @click="logout()" class="outline contrast">Logout</button></li>
+                </ul>
+            </nav>
 
-                <label for="password">
-                    Password
-                    <input x-model="password" type="password" id="password" name="password" placeholder="Your password"
-                        required />
-                </label>
+            <!-- login form -->
+            <article class="pico" x-show="showLogin" x-transition>
+                <hgroup>
+                    <h2>Login</h2>
+                    <h3>Please sign in to continue</h3>
+                </hgroup>
+                <form x-on:submit.prevent="login">
+                    Email
+                    <label for="email">
+                        <input x-model="email" type="email" id="email" name="email" placeholder="Email address"
+                            required />
+                    </label>
 
-                <button @click="login()" type="submit">Login</button>
-                <mark x-show="loginMessage" x-text="loginMessage"></mark>
-                <footer>
-                    <p>Don't have an account? <a href="#">Sign up</a></p>
-                </footer>
-            </form>
+                    <label for="password">
+                        Password
+                        <input x-model="password" type="password" id="password" name="password"
+                            placeholder="Your password" required />
+                    </label>
 
-        </article>
-
-        <!-- show shopping list -->
-        <article x-show="!showLogin" x-transition style="margin-top: 10%;">
-            <hgroup style="display: flex; align-items: center; gap: 1rem; width: 100%;">
-
-                <h3 x-text="`Items (${itemCount})`" style="display: flex; margin: 0;"
-                    :style="isInputFocused ? 'display: none;' : ''"></h3>
-
-                <form @submit.prevent="addItem" @focusin="isInputFocused = true" @focusout="isInputFocused = false"
-                    style="display: flex; flex-grow: 1;">
-
-                    <fieldset style="display: flex; flex-grow: 1; gap: 0.5rem; margin: 0; padding: 0; border: none;">
-                        <input type="text" id="newItem" x-model="newItem" placeholder="Enter item" required
-                            x-ref="itemInput" tabindex="0" :style="isInputFocused ? 'flex-grow: 1;' : 'flex-grow: 1;'">
-
-                        <button type="submit" style="max-width: 150px;" tabindex="0">Add Item</button>
-                    </fieldset>
+                    <button @click="login()" type="submit">Login</button>
+                    <mark x-show="loginMessage" x-text="loginMessage"></mark>
+                    <footer>
+                        <p>Don't have an account? <a href="#">Sign up</a></p>
+                    </footer>
                 </form>
-            </hgroup>
 
-            <hr>
-            </hr>
+            </article>
 
-            <div class="item-list">
+            <!-- show shopping list -->
+            <article x-show="!showLogin" x-transition style="margin-top: 10%;">
+                <hgroup style="display: flex; align-items: center; gap: 1rem; width: 100%;">
 
-                <!-- Add Item Form -->
-                <template x-for="(item, index) in items" :key="item.id">
-                    <article class="item-card">
-                        <div>
-                            <h5 x-text="item.item" style="margin-bottom: 0"></h5>
-                            <small class="item-meta">
-                                <span x-text="item.createdBy"></span> | <span
-                                    x-text="new Date(item.created).toLocaleDateString('en-US')"></span>
-                            </small>
-                        </div>
-                        <div class="item-actions">
-                            <!-- <button @click="editItem(item.id)" class="outline">Edit</button> -->
-                            <button @click="removeItem(item.id)" class="outline secondary">Remove</button>
-                        </div>
-                    </article>
+                    <h3 x-text="`Items (${itemCount})`" style="display: flex; margin: 0;"
+                        :style="isInputFocused ? 'display: none;' : ''"></h3>
+
+                    <form @submit.prevent="addItem" @focusin="isInputFocused = true" @focusout="isInputFocused = false"
+                        style="display: flex; flex-grow: 1;">
+
+                        <fieldset
+                            style="display: flex; flex-grow: 1; gap: 0.5rem; margin: 0; padding: 0; border: none;">
+                            <input type="text" id="newItem" x-model="newItem" placeholder="Enter item" required
+                                x-ref="itemInput" tabindex="0"
+                                :style="isInputFocused ? 'flex-grow: 1;' : 'flex-grow: 1;'">
+
+                            <button type="submit" style="max-width: 150px;" tabindex="0">Add Item</button>
+                        </fieldset>
+                    </form>
+                </hgroup>
+                <template x-if="errors.empty">
+                    <p class="errorText" x-text="errors.empty"></p>
                 </template>
-            </div>
+                <hr>
+                </hr>
 
-            <hr>
-            </hr>
+                <div class="item-list">
 
-        </article>
+                    <!-- Add Item Form -->
+                    <template x-for="(item, index) in items" :key="item.id">
+                        <article class="item-card">
+                            <div>
+                                <h5 x-text="item.item" style="margin-bottom: 0"></h5>
+                                <small class="item-meta">
+                                    <span x-text="item.createdBy"></span> | <span
+                                        x-text="new Date(item.created).toLocaleDateString('en-US')"></span>
+                                </small>
+                            </div>
+                            <div class="item-actions">
+                                <!-- <button @click="editItem(item.id)" class="outline">Edit</button> -->
+                                <button @click="removeItem(item.id)" class="outline secondary">Remove</button>
+                            </div>
+                        </article>
+                    </template>
+                </div>
 
+                <hr>
+                </hr>
+
+            </article>
+        </div>
 
     </main>
     <footer class="container centerFooter">v0.1.0</footer>

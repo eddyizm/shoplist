@@ -38,3 +38,9 @@
 .centerFooter {
     text-align: center;
 }
+
+.errorText {
+    font-size: 0.75rem;
+    color: var(--pico-del-color);
+    text-align: center;
+}

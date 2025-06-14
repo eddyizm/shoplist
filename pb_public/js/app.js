@@ -1,8 +1,10 @@
 document.addEventListener("alpine:init", () => {
   // Initialize PocketBase client (single instance)
-  const pb = new PocketBase(); // Ensure port matches your PB server
+  const pb = new PocketBase();
 
   Alpine.data("pbData", () => ({
+    isLoading: true,
+
     // Auth state
     showLogin: true,
     email: "",
@@ -16,19 +18,29 @@ document.addEventListener("alpine:init", () => {
     newItem: "",
     isInputFocused: false,
 
+    errors: {},
+    config: {},
+
     // Initialize component
     async init() {
       // Check existing auth
-      if (pb.authStore.isValid) {
-        try {
-          // Refresh auth if token exists
-          await pb.collection("users").authRefresh();
-          this.showLogin = false;
-          this.authData = pb.authStore;
-          await this.getItems(); // Load lists if authenticated
-        } catch (err) {
-          this.handleAuthError(err);
+      try {
+        if (pb.authStore.isValid) {
+          try {
+            // Refresh auth if token exists
+            await pb.collection("users").authRefresh();
+            this.showLogin = false;
+            this.authData = pb.authStore;
+            await this.getItems(); // Load lists if authenticated
+          } catch (err) {
+            this.handleAuthError(err);
+          }
         }
+        this.fetchConfig();
+      } catch (error) {
+        console.error("Failed to load config:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
@@ -63,7 +75,6 @@ document.addEventListener("alpine:init", () => {
         this.items = await pb.collection("items").getFullList({
           sort: "-created", // Newest first
         });
-        console.log("items returned", this.items.length);
         this.itemCount = this.items.length;
       } catch (err) {
         console.error("Failed to load lists:", err);
@@ -72,42 +83,56 @@ document.addEventListener("alpine:init", () => {
 
     // Create new item
     async addItem() {
-      console.log("clicking addItem!");
-      if (!this.newItem.trim()) return;
-        try {
-          await pb.collection("items").create({
-            item: this.newItem,
-            createdBy: pb.authStore.record.name // Link to logged-in user
-          });
-          this.newItem = "";
-          this.$refs.itemInput.blur(); 
-          await this.getItems(); // Refresh list
-        } catch (err) {
-          console.error("Failed to create item:", err);
-        }
-      },
+      console.log("adding Items");
+      this.validateItemField();
 
-      // remove item
-      async removeItem(id) {
-        console.log('removing item');
-        console.log(id);
-        
-        try {
-          let response = await pb.collection("items").delete(id);
-          console.log(`delete response: ${response}`);
-          if (response === true)
-              { await this.getItems(); }
-        } catch (err) {
-          console.error("Failed to delete item:", err);
-        }
-      },
+      if (Object.keys(this.errors).length !== 0) {
+        this.newItem = "";
+        return;
+      }
+      try {
+        await pb.collection("items").create({
+          item: this.newItem,
+          createdBy: pb.authStore.record.name, // Link to logged-in user
+        });
+        this.newItem = "";
+        this.$refs.itemInput.blur();
+        await this.getItems();
+      } catch (err) {
+        console.error("Failed to create item:", err);
+      }
+    },
 
-        // edit item
-      async editItem() {
-        // TODO this should probably just be a checkbox to mark
-        // as complete.
-        console.log('edit item');
-      },
+    // remove item
+    async removeItem(id) {
+      console.log("removing item");
+      console.log(id);
+
+      try {
+        let response = await pb.collection("items").delete(id);
+        console.log(`delete response: ${response}`);
+        if (response === true) {
+          await this.getItems();
+        }
+      } catch (err) {
+        console.error("Failed to delete item:", err);
+      }
+    },
+
+    validateItemField() {
+      this.errors = {};
+      if (!this.newItem.trim()) {
+        this.errors.empty =
+          "Please enter somethings besides an empty spaces puff";
+      }
+    },
+
+    // edit item
+    async editItem() {
+      // TODO this should probably just be a checkbox to mark
+      // as complete.
+      console.log("edit item");
+    },
 
     // Handle auth errors
     handleAuthError(err) {
@@ -115,6 +140,19 @@ document.addEventListener("alpine:init", () => {
       pb.authStore.clear();
       this.showLogin = true;
       this.loginMessage = err.message || "Authentication error";
+    },
+
+    async fetchConfig() {
+      try {
+        const res = await fetch("/api/_/config");
+        this.config = await res.json();
+      } catch (err) {
+        console.log("Config load failed:");
+        console.log(err);
+        this.config = {}; // Fallback empty
+      } finally {
+        this.loading = false;
+      }
     },
   }));
 });
