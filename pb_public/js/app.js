@@ -31,7 +31,7 @@ document.addEventListener("alpine:init", () => {
             await pb.collection("users").authRefresh();
             this.showLogin = false;
             this.authData = pb.authStore;
-            await this.getItems(); // Load lists if authenticated
+            await this.getItems();
           } catch (err) {
             this.handleAuthError(err);
           }
