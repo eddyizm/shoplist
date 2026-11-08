@@ -1,3 +1,74 @@
+// PWA install/update handlers — registered at top-level window scope
+// to avoid race conditions with Alpine's init callback.
+(function() {
+  let deferredInstallPrompt = null;
+
+  const setInstallButtonVisible = (visible) => {
+    const button = document.getElementById('pwa-install');
+    if (button) button.hidden = !visible;
+  };
+
+  // Store the browser's install prompt so the app can trigger it from a
+  // user gesture later. The event only fires when the app is installable.
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    setInstallButtonVisible(true);
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    setInstallButtonVisible(false);
+  });
+
+  // Called by the install button in index.html.
+  window.promptPwaInstall = async () => {
+    if (!deferredInstallPrompt) return false;
+
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    setInstallButtonVisible(false);
+    return true;
+  };
+
+  if ('serviceWorker' in navigator) {
+    // Remember whether a worker was already controlling the page so the
+    // first install does not trigger an unnecessary reload.
+    const hadController = Boolean(navigator.serviceWorker.controller);
+
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then((reg) => {
+        console.log('[PWA] Service Worker registered with scope:', reg.scope);
+
+        // Prompt when a new version has finished installing and is waiting.
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state !== 'installed' || !navigator.serviceWorker.controller) {
+              return;
+            }
+
+            if (window.confirm('A new version is available. Refresh now?')) {
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        });
+      }).catch((err) => {
+        console.warn('[PWA] Service Worker registration failed:', err);
+      });
+    });
+
+    // The new worker takes over after SKIP_WAITING; reload once to pick it up.
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController) return;
+      window.location.reload();
+    });
+  }
+})();
+
 document.addEventListener("alpine:init", () => {
   // Initialize PocketBase client (single instance)
   const pb = new PocketBase();

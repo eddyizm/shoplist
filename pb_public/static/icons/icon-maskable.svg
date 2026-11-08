@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Source artwork for the maskable PNG icons. The cart is kept inside the
+       central safe zone so Android can crop the icon to any mask shape. -->
+  <rect width="512" height="512" fill="#e48500"/>
+  <g transform="translate(256 256) scale(0.7) translate(-256 -256)"
+     fill="#fff" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M64 96h72l28 112" fill="none" stroke-width="32"/>
+    <path d="M160 176h304l-48 176H208z"/>
+    <circle cx="224" cy="416" r="36" stroke="none"/>
+    <circle cx="400" cy="416" r="36" stroke="none"/>
+  </g>
+</svg>

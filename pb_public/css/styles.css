@@ -1,3 +1,45 @@
+/* PWA theme color support.
+   `:root[data-theme=...]` matches Pico's `:root:not([data-theme=dark])`
+   specificity, and this file loads after Pico, so these values win. */
+:root[data-theme=light] {
+  --pico-primary: #e48500;
+  --pico-primary-background: #ff9500;
+  --pico-primary-border: var(--pico-primary-background);
+  --pico-primary-hover: #7a4400;
+  --pico-primary-hover-background: #e48500;
+  --pico-primary-hover-border: var(--pico-primary-hover-background);
+}
+:root[data-theme=dark] {
+  --pico-primary: #e48500;
+  --pico-primary-background: #ff9500;
+  --pico-primary-border: var(--pico-primary-background);
+  --pico-primary-hover: #ffa23a;
+  --pico-primary-hover-background: #ff9500;
+  --pico-primary-hover-border: var(--pico-primary-hover-background);
+}
+
+/* When the OS prefers light and no explicit theme is set, apply the same
+   light values. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --pico-primary: #e48500;
+    --pico-primary-background: #ff9500;
+    --pico-primary-border: var(--pico-primary-background);
+    --pico-primary-hover: #7a4400;
+    --pico-primary-hover-background: #e48500;
+    --pico-primary-hover-border: var(--pico-primary-hover-background);
+  }
+}
+
+/* Keep content clear of notches and rounded corners; the viewport uses
+   `viewport-fit=cover` and iOS uses a translucent status bar. */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+}
+
 .item-card {
   display: grid;
   grid-template-columns: 1fr auto;
