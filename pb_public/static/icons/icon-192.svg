@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="32" fill="#e48500"/>
+  <text x="96" y="100" text-anchor="middle" font-family="system-ui" font-size="56" font-weight="bold" fill="white">Shopping</text>
+  <text x="96" y="136" text-anchor="middle" font-family="system-ui" font-size="28" fill="white" opacity="0.8">List</text>
+</svg>

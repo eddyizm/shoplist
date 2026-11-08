@@ -1,3 +1,21 @@
+/* PWA theme color support */
+[data-theme=light] {
+  --pico-primary: #e48500;
+  --pico-primary-background: #ff9500;
+  --pico-primary-border: var(--pico-primary-background);
+  --pico-primary-hover: #7a4400;
+  --pico-primary-hover-background: #e48500;
+  --pico-primary-hover-border: var(--pico-primary-hover-background);
+}
+[data-theme=dark] {
+  --pico-primary: #e48500;
+  --pico-primary-background: #ff9500;
+  --pico-primary-border: var(--pico-primary-background);
+  --pico-primary-hover: #ffa23a;
+  --pico-primary-hover-background: #ff9500;
+  --pico-primary-hover-border: var(--pico-primary-hover-background);
+}
+
 .item-card {
   display: grid;
   grid-template-columns: 1fr auto;

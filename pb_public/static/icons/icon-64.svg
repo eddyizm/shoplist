@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="10" fill="#e48500"/>
+  <text x="32" y="36" text-anchor="middle" font-family="system-ui" font-size="24" font-weight="bold" fill="white">S</text>
+  <text x="32" y="52" text-anchor="middle" font-family="system-ui" font-size="12" fill="white" opacity="0.8">List</text>
+</svg>

@@ -11,14 +11,23 @@ Rename your `.env.dev` to `.env` and update the variables for your name and url
 
 ```
 podman run -d -p 8080:8080 \
-    -v ./pb_data:/pb/pb_data \
-    -v ./pb_hooks:/pb/pb_hooks \
-    -v ./pb_public:/pb/pb_public \
+    -v ./pb_data:/pb/pb_data:Z \
+    -v ./pb_hooks:/pb/pb_hooks:Z \
+    -v ./pb_public:/pb/pb_public:Z \
     --env-file .env \
     --name pb \
     pocketbase
+```
+
+The `:Z` suffix relabels the bind mounts for SELinux. Without it Podman
+containers on SELinux hosts fail at startup with:
 
 ```
+panic: registerHooks: open /pb/pb_hooks: permission denied
+```
+
+Use `:z` instead of `:Z` if the same directories are shared by multiple
+containers.
 
 
 Caddy config
