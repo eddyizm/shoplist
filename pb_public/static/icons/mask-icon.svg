@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Monochrome shopping bag for Safari pinned tabs; Safari applies the
+       color from the <link rel="mask-icon"> tag. -->
+  <path fill="#000" d="M128 176h256l-24 256H152z"/>
+  <path fill="none" stroke="#000" stroke-width="32" stroke-linecap="round" d="M192 176v-16a64 64 0 0 1 128 0v16"/>
+</svg>

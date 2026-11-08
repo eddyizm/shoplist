@@ -4,7 +4,7 @@
 
 // Bump this whenever the cached static assets change so clients pick up
 // the new files.
-const CACHE_NAME = "shopping-list-v2";
+const CACHE_NAME = "shopping-list-v3";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -12,19 +12,15 @@ const STATIC_ASSETS = [
   "/css/pico.pumpkin.css",
   "/css/styles.css",
   "/js/app.js",
+  "/js/alpine.min.js",
   "/js/pocketbase.umd.js",
-  "/static/icons/icon-512.svg",
-  "/static/icons/icon-192.svg",
-  "/static/icons/icon-32.svg",
-  "/static/icons/icon-128.svg",
-  "/static/icons/icon-64.svg",
   "/static/icons/icon-192.png",
   "/static/icons/icon-512.png",
-  "/static/icons/icon-32.png",
-  "/static/icons/icon-128.png",
-  "/static/icons/icon-64.png",
+  "/static/icons/icon-192-maskable.png",
+  "/static/icons/icon-512-maskable.png",
   "/static/icons/icon-180.png",
   "/static/icons/favicon.ico",
+  "/static/icons/mask-icon.svg",
 ];
 
 self.addEventListener("install", (event) => {
@@ -75,7 +71,7 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
 
-  // Leave cross-origin requests (e.g. the Alpine CDN) to the browser.
+  // Leave cross-origin requests to the browser.
   if (url.origin !== self.location.origin) return;
 
   // Never cache PocketBase API or admin requests. They are user-specific and
@@ -90,16 +86,28 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseToCache);
-          });
+          // Only cache successful navigations (e.g. not a 404 or 500 page).
+          if (response.ok) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
+            });
+          }
           return response;
         })
         .catch(() =>
           caches
             .match(request)
             .then((cached) => cached || caches.match("/index.html"))
+            .then(
+              (cached) =>
+                cached ||
+                new Response("Offline", {
+                  status: 503,
+                  statusText: "Service Unavailable",
+                  headers: { "Content-Type": "text/plain; charset=utf-8" },
+                })
+            )
         )
     );
     return;
